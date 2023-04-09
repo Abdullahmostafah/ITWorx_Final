@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Cucumber" time="22.988" tests="3" skipped="0" failures="0" errors="0">
+<testcase classname="user should be able to login to the system" name="user login with valid username and password" time="9.975">
+<system-out><![CDATA[
+Given user navigates to login page..........................................passed
+When user enter valid name and password.....................................passed
+And user click on login button..............................................passed
+Then user could login successfully and go to home page......................passed
+]]></system-out>
+</testcase>
+<testcase classname="user should be able to add course to course list" name="logged user adding a course" time="3.367">
+<system-out><![CDATA[
+Given user click on course page icon........................................passed
+And user click on create course button......................................passed
+When user fill mandatory course fields and click on save....................passed
+]]></system-out>
+</testcase>
+<testcase classname="user should be able to see course title displayed at courses list page" name="user has created course and checking its name" time="3.013">
+<system-out><![CDATA[
+Given user click on course page icon........................................passed
+When search by course name..................................................passed
+Then course title is displayed on course page...............................passed
+]]></system-out>
+</testcase>
+</testsuite>
