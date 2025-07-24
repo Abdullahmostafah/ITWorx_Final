@@ -1,35 +1,45 @@
 package StepDefinitions;
 
+import Base.TestBase;
 import Pages.P01_LoginPage;
+import Utils.ConfigReaderWriter;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.junit.Assert;
-import static java.lang.Boolean.TRUE;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class D01_LoginStepDefinitions {
-P01_LoginPage login = new P01_LoginPage();
+import java.time.Duration;
 
-    @Given("user navigates to login page")
-    public void user_navigates_to_login_page(){
-        Hooks.driver.navigate().to("https://swinji.azurewebsites.net");
+public class D01_LoginStepDefinitions extends TestBase {
+    private final P01_LoginPage login;
+
+    public D01_LoginStepDefinitions() {
+        super();
+        this.login = new P01_LoginPage(TestBase.getDriver());
     }
 
-    @When("user enter valid name and password")
-    public void user_enter_valid_name_and_password(){
-        login.LoginSteps("testregister@aaa.com","Wakram_123");
+    @Given("the user navigates to the Winjigo login page")
+    public void the_user_navigates_to_the_winjigo_login_page() {
+        TestBase.getDriver().navigate().to(ConfigReaderWriter.getPropKey("url"));
+        new WebDriverWait(TestBase.getDriver(), Duration.ofSeconds(15))
+                .until(ExpectedConditions.visibilityOfElementLocated(org.openqa.selenium.By.id("Email")));
+        System.out.println("Navigated to URL: " + TestBase.getDriver().getCurrentUrl());
     }
 
-    @And ("user click on login button")
-    public void user_click_on_login_button() throws InterruptedException {
-        login.loginButton().click();
-        Thread.sleep(2000);
+    @When("the user enters valid credentials")
+    public void the_user_enters_valid_credentials() {
+        login.loginSteps();
     }
 
-    @Then("user could login successfully and go to home page")
-    public void user_could_login_successfully_and_go_to_home_page() throws InterruptedException {
-    login.loginValidation();
+    @And("the user clicks the login button")
+    public void the_user_clicks_the_login_button() {
+        // Included in loginSteps
     }
 
+    @Then("the user is logged in and redirected to the home page")
+    public void the_user_is_logged_in_and_redirected_to_the_home_page() {
+        login.loginValidation();
+    }
 }

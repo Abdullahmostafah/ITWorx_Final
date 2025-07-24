@@ -1,27 +1,43 @@
 package StepDefinitions;
 
+import Base.TestBase;
+import Utils.ScreenshotUtils;
+import io.cucumber.java.After;
 import io.cucumber.java.AfterAll;
+import io.cucumber.java.Before;
 import io.cucumber.java.BeforeAll;
-import io.github.bonigarcia.wdm.WebDriverManager;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import java.util.concurrent.TimeUnit;
 
-public class Hooks {
-    public static WebDriver driver = null;
+import java.io.File;
+import java.nio.file.Paths;
 
-@BeforeAll
-public static void openBrowser() {
-    WebDriverManager.chromedriver().setup();
-    driver = new ChromeDriver();
-    driver.manage().window().maximize();
-    driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-}
+public class Hooks extends TestBase {
+    @BeforeAll
+    public void initDriver() {
+        setUp();
+    }
 
-@AfterAll
-public static void quitBrowser() throws InterruptedException {
-    Thread.sleep(3000);
-    driver.quit();
-}
-
+    @AfterAll
+    public void closeDriver(io.cucumber.java.Scenario scenario) {
+        if (driver != null) {
+            if (scenario.isFailed()) {
+                String screenshotPath = ScreenshotUtils.takeScreenshot(driver, scenario.getName());
+                if (screenshotPath != null && !screenshotPath.isEmpty()) {
+                    try {
+                        String relativePath = Paths.get("..", "screenshots", new File(screenshotPath).getName()).toString();
+                        scenario.attach(
+                                java.nio.file.Files.readAllBytes(new File(screenshotPath).toPath()),
+                                "image/png",
+                                "Failure Screenshot"
+                        );
+                        System.out.println("Screenshot attached to report: " + relativePath);
+                    } catch (Exception e) {
+                        System.err.println("Failed to attach screenshot to scenario '" + scenario.getName() + "': " + e.getMessage());
+                    }
+                } else {
+                    System.err.println("Screenshot path is empty for scenario '" + scenario.getName() + "'");
+                }
+            }
+            tearDown();
+        }
+    }
 }
